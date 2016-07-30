@@ -40,6 +40,11 @@ namespace OctoChimp
         public ushort ProgramCounter;
 
         /// <summary>
+        /// Program counter as of last cycle.
+        /// </summary>
+        public ushort PrevProgramCounter;
+
+        /// <summary>
         /// 64x32 bool array, screen pixels are true if white and false if black.
         /// </summary>
         public bool[,] Screen;
@@ -176,27 +181,45 @@ namespace OctoChimp
         /// </summary>
         private void EmulateCycle()
         {
+            PrevProgramCounter = ProgramCounter;
+
+            // Check boundaries
+            if (ProgramCounter < 512 || ProgramCounter > 4096)
+            {
+                Console.WriteLine("ProgramCounter is out of bounds!");
+                Debugger.Break();
+            }
+
             // Fetch
             CurrentOpcode = (ushort) (Memory[ProgramCounter] << 8 | Memory[ProgramCounter + 1]);
-
+            
             var decodedOpcode = new DecodedOpcode(CurrentOpcode);
-
+            
             // Decode + execute
             switch (CurrentOpcode & 0xF000)
             {
                 case 0x1000:
+                    decodedOpcode.Description = $"Jump to 0x{decodedOpcode.NNN.ToString("X")}";
                     _1NNN(decodedOpcode);
                     break;
 
+                case 0x2000:
+                    decodedOpcode.Description = $"Call subroutine at 0x{decodedOpcode.NNN.ToString("X")}";
+                    _2NNN(decodedOpcode);
+                    break;
+
                 case 0x3000:
+                    decodedOpcode.Description = $"Skip if V{decodedOpcode.X} == {decodedOpcode.NN.ToString("X")}";
                     _3XNN(decodedOpcode);
                     break;
 
                 case 0x6000:
+                    decodedOpcode.Description = $"V{decodedOpcode.X} = {decodedOpcode.NN.ToString("X")}";
                     _6XNN(decodedOpcode);
                     break;
 
                 case 0x7000:
+                    decodedOpcode.Description = $"V{decodedOpcode.X} += {decodedOpcode.NN.ToString("X")}";
                     _7XNN(decodedOpcode);
                     break;
 
@@ -205,14 +228,17 @@ namespace OctoChimp
                     break;
                 
                 case 0xA000:
+                    decodedOpcode.Description = $"I = {decodedOpcode.NNN.ToString("X")}";
                     _ANNN(decodedOpcode);
                     break;
                 
                 case 0xC000:
+                    decodedOpcode.Description = $"V{decodedOpcode.X} = RNG & {decodedOpcode.NN.ToString("X")}";
                     _CXNN(decodedOpcode);
                     break;
                 
                 case 0xD000:
+                    decodedOpcode.Description = $"Sprite at V{decodedOpcode.X}, V{decodedOpcode.Y} ({VRegisters[decodedOpcode.X]}, {VRegisters[decodedOpcode.Y]})";
                     _DXYN(decodedOpcode);
                     break;
                 
@@ -220,7 +246,9 @@ namespace OctoChimp
                     Debugger.Break();
                     break;
             }
-            
+
+            Console.WriteLine($"0x{PrevProgramCounter.ToString("X")}\t{decodedOpcode}");
+
             // Update timers
         }
 
@@ -231,8 +259,26 @@ namespace OctoChimp
         /// <param name="decodedOpcode"></param>
         private void _1NNN(DecodedOpcode decodedOpcode)
         {
-            ProgramCounter += 2;
-            //ProgramCounter = decodedOpcode.NNN;
+            if (ProgramCounter == decodedOpcode.NNN)
+            {
+                Debugger.Break();
+            }
+
+            ProgramCounter = decodedOpcode.NNN;
+        }
+
+        /// <summary>
+        /// Calls subroutine at NNN.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _2NNN(DecodedOpcode decodedOpcode)
+        {
+            // Add to stack
+            Stack[StackPointer] = (byte) ProgramCounter;
+            StackPointer++;
+
+            // Jump to address
+            ProgramCounter = (ushort) (decodedOpcode.NNN + 512);
         }
 
         /// <summary>
@@ -268,7 +314,9 @@ namespace OctoChimp
         {
             ProgramCounter += 2;
 
-            VRegisters[decodedOpcode.X] = (ushort)(VRegisters[decodedOpcode.X] + decodedOpcode.NN);
+            var n = (ushort)(VRegisters[decodedOpcode.X] + decodedOpcode.NN);
+
+            VRegisters[decodedOpcode.X] = n;
         }
 
         /// <summary>
@@ -328,7 +376,8 @@ namespace OctoChimp
 
                     VRegisters[decodedOpcode.X] -= VRegisters[decodedOpcode.Y];
                     break;
-
+                
+                // TODO: These.
                 // Shifts VX right by one. VF is set to the value of the least significant bit of VX before the shift.
                 //case 0x6:
                 //    break;

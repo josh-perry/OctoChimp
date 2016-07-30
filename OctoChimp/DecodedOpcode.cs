@@ -7,6 +7,8 @@
             Opcode = currentOpcode;
         }
 
+        public string Description { get; set; }
+
         public ushort Opcode { get; set; }
 
         public ushort NNN => (ushort)(Opcode & 0x0FFF);
@@ -18,5 +20,10 @@
         public byte X => (byte)((Opcode & 0x0F00) >> 8);
 
         public byte Y => (byte)((Opcode & 0x00F0) >> 4);
+
+        public override string ToString()
+        {
+            return $"0x{Opcode.ToString("X")}\t{Description}";
+        }
     }
 }

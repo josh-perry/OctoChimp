@@ -199,6 +199,10 @@ namespace OctoChimp
                 case 0x7000:
                     _7XNN(decodedOpcode);
                     break;
+
+                case 0x8000:
+                    _8XYN(decodedOpcode);
+                    break;
                 
                 case 0xA000:
                     _ANNN(decodedOpcode);
@@ -213,7 +217,6 @@ namespace OctoChimp
                     break;
                 
                 default:
-                    Console.WriteLine($"Unknown opcode: 0x{BitConverter.GetBytes(CurrentOpcode)}");
                     Debugger.Break();
                     break;
             }
@@ -223,12 +226,13 @@ namespace OctoChimp
 
         #region Opcodes
         /// <summary>
-        /// Jumps to address NNN.
+        /// Jumps to address NNN.   
         /// </summary>
         /// <param name="decodedOpcode"></param>
         private void _1NNN(DecodedOpcode decodedOpcode)
         {
-            ProgramCounter = decodedOpcode.NNN;
+            ProgramCounter += 2;
+            //ProgramCounter = decodedOpcode.NNN;
         }
 
         /// <summary>
@@ -268,6 +272,83 @@ namespace OctoChimp
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _8XYN(DecodedOpcode decodedOpcode)
+        {
+            switch (decodedOpcode.N)
+            {
+                // Sets VX to the value of VY.
+                case 0x0:
+                    VRegisters[decodedOpcode.X] = VRegisters[decodedOpcode.Y];
+                    break;
+
+                // Sets VX to VX or VY.
+                case 0x1:
+                    VRegisters[decodedOpcode.X] = (ushort) (VRegisters[decodedOpcode.X] | VRegisters[decodedOpcode.Y]);
+                    break;
+
+                // Sets VX to VX and VY.
+                case 0x2:
+                    VRegisters[decodedOpcode.X] = (ushort)(VRegisters[decodedOpcode.X] & VRegisters[decodedOpcode.Y]);
+                    break;
+
+                // Sets VX to VX xor VY.
+                case 0x3:
+                    VRegisters[decodedOpcode.X] = (ushort)(VRegisters[decodedOpcode.X] ^ VRegisters[decodedOpcode.Y]);
+                    break;
+
+                // Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
+                case 0x4:
+                    // Not sure if this is correct.
+                    // Source: https://github.com/Oicho/GO-Chip8/blob/master/chip8/opcodes.go#L151
+                    if (VRegisters[decodedOpcode.Y] > 0xFF - decodedOpcode.X)
+                    {
+                        VRegisters[0xF] = 1;
+                    }
+                    else
+                    {
+                        VRegisters[0xF] = 0;
+                    }
+
+                    VRegisters[decodedOpcode.X] += VRegisters[decodedOpcode.Y];
+                    break;
+
+                // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
+                case 0x5:
+                    if (decodedOpcode.X < decodedOpcode.Y)
+                    {
+                        VRegisters[0xF] = 1;
+                    }
+                    else
+                    {
+                        VRegisters[0xF] = 0;
+                    }
+
+                    VRegisters[decodedOpcode.X] -= VRegisters[decodedOpcode.Y];
+                    break;
+
+                // Shifts VX right by one. VF is set to the value of the least significant bit of VX before the shift.
+                //case 0x6:
+                //    break;
+
+                // Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
+                //case 0x7:
+                //    break;
+
+                // Shifts VX left by one. VF is set to the value of the most significant bit of VX before the shift.
+                //case 0xE:
+                //    break;
+
+                default:
+                    throw new Exception("Unknown opcode!");
+            }
+
+            ProgramCounter += 2;
+        }
+
+        /// <summary>
         /// Sets I to the address NNN.
         /// </summary>
         /// <param name="decodedOpcode"></param>
@@ -298,14 +379,6 @@ namespace OctoChimp
             ProgramCounter += 2;
 
             // TODO: Finish DXYN.
-            var spriteCoordinateX = (ushort)(CurrentOpcode & 0x0F00);
-            var spriteCoordinateY = (ushort)(CurrentOpcode & 0x00F0);
-            var spriteHeight = (ushort)(CurrentOpcode & 0x000F);
-
-            for (var y = 0; y < spriteHeight; y++)
-            {
-                Screen[spriteCoordinateX, y + spriteCoordinateY] = true;
-            }
         }
         #endregion
 

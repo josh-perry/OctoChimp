@@ -2,9 +2,9 @@
 
 namespace OctoChimp
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
             var emulator = new Emulator();
             emulator.LoadGame(new FileInfo(@"C:\Users\Josh\Desktop\c8games\MAZE"));

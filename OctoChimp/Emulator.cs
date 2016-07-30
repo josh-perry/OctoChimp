@@ -27,7 +27,7 @@ namespace OctoChimp
         /// <summary>
         /// 15 8-bit general registers (V0 through VE) + 1 carry flag.
         /// </summary>
-        public byte[] VRegisters;
+        public ushort[] VRegisters;
 
         /// <summary>
         /// 
@@ -69,6 +69,9 @@ namespace OctoChimp
         /// </summary>
         public bool DrawFlag { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private static byte[] _fontSet =
         {
           0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -89,6 +92,8 @@ namespace OctoChimp
           0xF0, 0x80, 0xF0, 0x80, 0x80  // F
         };
 
+        private Random rnd;
+
         /// <summary>
         /// 
         /// </summary>
@@ -103,7 +108,7 @@ namespace OctoChimp
         private void Initialize()
         {
             Memory = new byte[4096];
-            VRegisters = new byte[16];
+            VRegisters = new ushort[16];
             IndexRegister = new ushort();
             ProgramCounter = new ushort();
             Screen = new bool[64, 32];
@@ -112,9 +117,14 @@ namespace OctoChimp
 
             ProgramCounter = 512;
 
+            rnd = new Random();
+
             LoadFont();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void LoadFont()
         {
             Console.WriteLine($"Loading fontset");
@@ -169,57 +179,31 @@ namespace OctoChimp
             // Fetch
             CurrentOpcode = (ushort) (Memory[ProgramCounter] << 8 | Memory[ProgramCounter + 1]);
 
+            var decodedOpcode = new DecodedOpcode(CurrentOpcode);
+
             // Decode + execute
             switch (CurrentOpcode & 0xF000)
             {
-                // 3XNN:
-                // Skips the next instruction if VX equals NN.
                 case 0x3000:
-                    ProgramCounter += 2;
+                    _3XNN(decodedOpcode);
+                    break;
 
-                    var registerX = (ushort)(CurrentOpcode & 0x00FF);
-                    var nn = CurrentOpcode & 0xFF00;
-
-                    if (VRegisters[registerX] == nn)
-                    {
-                        ProgramCounter += 2;
-                    }
-
+                case 0x7000:
+                    _7XNN(decodedOpcode);
                     break;
                 
-                // ANNN:
-                // Sets I to the address NNN.
                 case 0xA000:
-                    IndexRegister = (ushort) (CurrentOpcode & 0x0FFF);
-                    ProgramCounter += 2;
+                    _ANNN(decodedOpcode);
                     break;
                 
-                // CXNN:
-                // Sets VX to the result of a bitwise and operation on a random number and NN.
                 case 0xC000:
-                    // TODO: CXNN.
-
-                    ProgramCounter += 2;
+                    _CXNN(decodedOpcode);
                     break;
                 
-                // DXYN:
-                // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels.
-                // Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction.
-                // As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
                 case 0xD000:
-                    // TODO: Finish DXYN.
-
-                    var spriteCoordinateX = (ushort) (CurrentOpcode & 0x0F00);
-                    var spriteCoordinateY = (ushort) (CurrentOpcode & 0x00F0);
-                    var spriteHeight = (ushort) (CurrentOpcode & 0x000F);
-
-                    for (var y = 0; y < spriteHeight; y++)
-                    {
-                        Screen[spriteCoordinateX, y + spriteCoordinateY] = true;
-                    }
-
+                    _DXYN(decodedOpcode);
                     break;
-
+                
                 default:
                     Console.WriteLine($"Unknown opcode: 0x{BitConverter.GetBytes(CurrentOpcode)}");
                     Debugger.Break();
@@ -228,6 +212,75 @@ namespace OctoChimp
             
             // Update timers
         }
+
+        #region Opcodes
+
+        /// <summary>
+        /// Skips the next instruction if VX equals NN.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _3XNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+
+            if (VRegisters[decodedOpcode.X] == decodedOpcode.NN)
+            {
+                ProgramCounter += 2;
+            }
+        }
+
+        /// <summary>
+        /// Adds NN to VX.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _7XNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+
+            VRegisters[decodedOpcode.X] = (ushort)(VRegisters[decodedOpcode.X] + decodedOpcode.NN);
+        }
+
+        /// <summary>
+        /// Sets I to the address NNN.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _ANNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+            IndexRegister = decodedOpcode.NNN;
+        }
+
+        /// <summary>
+        /// Sets VX to the result of a bitwise and operation on a random number and NN.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _CXNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+            VRegisters[decodedOpcode.X] = (ushort) (decodedOpcode.NN & rnd.Next());
+        }
+
+        /// <summary>
+        /// Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels.
+        /// Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction.
+        /// As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _DXYN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+
+            // TODO: Finish DXYN.
+            var spriteCoordinateX = (ushort)(CurrentOpcode & 0x0F00);
+            var spriteCoordinateY = (ushort)(CurrentOpcode & 0x00F0);
+            var spriteHeight = (ushort)(CurrentOpcode & 0x000F);
+
+            for (var y = 0; y < spriteHeight; y++)
+            {
+                Screen[spriteCoordinateX, y + spriteCoordinateY] = true;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// 

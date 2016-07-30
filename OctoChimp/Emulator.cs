@@ -426,8 +426,30 @@ namespace OctoChimp
         private void _DXYN(DecodedOpcode decodedOpcode)
         {
             ProgramCounter += 2;
+            
+            VRegisters[0xF] = 0;
 
-            // TODO: Finish DXYN.
+            for (var pixelY = 0; pixelY < decodedOpcode.N; pixelY++)
+            {
+                var pixel = Memory[IndexRegister + pixelY];
+
+                for (var pixelX = 0; pixelX < 8; pixelX++)
+                {
+                    if ((pixel & (0x80 >> pixelX)) == 0)
+                    {
+                        continue;
+                    }
+
+                    var screenPixel = Screen[pixelX + VRegisters[decodedOpcode.X], pixelY + VRegisters[decodedOpcode.Y]];
+
+                    if (screenPixel)
+                    {
+                        VRegisters[0xF] = 1;
+                    }
+
+                    Screen[pixelX + VRegisters[decodedOpcode.X], pixelY + VRegisters[decodedOpcode.Y]] = !screenPixel;
+                }
+            }
         }
         #endregion
 

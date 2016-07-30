@@ -184,8 +184,16 @@ namespace OctoChimp
             // Decode + execute
             switch (CurrentOpcode & 0xF000)
             {
+                case 0x1000:
+                    _1NNN(decodedOpcode);
+                    break;
+
                 case 0x3000:
                     _3XNN(decodedOpcode);
+                    break;
+
+                case 0x6000:
+                    _6XNN(decodedOpcode);
                     break;
 
                 case 0x7000:
@@ -214,6 +222,14 @@ namespace OctoChimp
         }
 
         #region Opcodes
+        /// <summary>
+        /// Jumps to address NNN.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _1NNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter = decodedOpcode.NNN;
+        }
 
         /// <summary>
         /// Skips the next instruction if VX equals NN.
@@ -227,6 +243,17 @@ namespace OctoChimp
             {
                 ProgramCounter += 2;
             }
+        }
+
+        /// <summary>
+        /// Sets VX to NN.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _6XNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+
+            VRegisters[decodedOpcode.X] = decodedOpcode.NN;
         }
 
         /// <summary>

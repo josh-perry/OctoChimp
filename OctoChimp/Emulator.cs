@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using SFML.Graphics;
 
 namespace OctoChimp
 {
@@ -13,6 +14,8 @@ namespace OctoChimp
             0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
             0x200-0xFFF - Program ROM and work RAM
         */
+
+        private Renderer Renderer;
 
         /// <summary>
         /// The opcode about to be run. 2 bytes.
@@ -72,7 +75,7 @@ namespace OctoChimp
         /// <summary>
         /// Should we update the screen this frame?
         /// </summary>
-        public bool DrawFlag { get; set; }
+        public bool DrawFlag => true;
 
         /// <summary>
         /// 
@@ -125,6 +128,8 @@ namespace OctoChimp
             rnd = new Random();
 
             LoadFont();
+
+            Renderer = new Renderer(64*8, 32*8);
         }
 
         /// <summary>
@@ -151,6 +156,8 @@ namespace OctoChimp
             {
                 EmulateCycle();
 
+                Renderer.WindowEvents();
+
                 if (DrawFlag)
                 {
                     DrawGraphics();
@@ -173,7 +180,7 @@ namespace OctoChimp
         /// </summary>
         private void DrawGraphics()
         {
-
+            Renderer.Update(Screen);
         }
         
         /// <summary>
@@ -261,7 +268,7 @@ namespace OctoChimp
         {
             if (ProgramCounter == decodedOpcode.NNN)
             {
-                Debugger.Break();
+               Debugger.Break();
             }
 
             ProgramCounter = decodedOpcode.NNN;

@@ -8,9 +8,13 @@ namespace OctoChimp
     {
         public RenderWindow Window;
 
-        public uint ScreenWidth;
+        public uint ScreenWidth { get; set; }
 
-        public uint ScreenHeight;
+        public uint ScreenHeight { get; set; }
+
+        public Color BackgroundColour { get; set; }
+
+        public Color ForegroundColour { get; set; }
 
         public Renderer(uint screenWidth, uint screenHeight)
         {
@@ -23,7 +27,7 @@ namespace OctoChimp
             if (Window == null)
                 return;
 
-            Window.Clear();
+            Window.Clear(BackgroundColour);
 
             for (var x = 0; x < pixels.GetLength(0); x++)
             {
@@ -37,6 +41,8 @@ namespace OctoChimp
                     }
 
                     var rectangle = new RectangleShape(new Vector2f(8f, 8f)) {Position = new Vector2f(x*8, y*8)};
+                    rectangle.FillColor = ForegroundColour;
+                    rectangle.OutlineColor = ForegroundColour;
                     Window.Draw(rectangle);
                 }
             }

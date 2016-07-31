@@ -79,12 +79,27 @@ namespace OctoChimpWPF
                 _emulator.Renderer.Window.Dispose();
             }
 
-            _emulator = new Emulator();
-            _emulator.LoadGame(new FileInfo(dialog.FileName));
-            new Thread(_emulator.Run).Start();
+            NewEmulator(new FileInfo(dialog.FileName));
 
             CreateRenderWindow();
             ResizeWindow();
+        }
+
+        private void NewEmulator(FileInfo file)
+        {
+            _emulator = new Emulator();
+            _emulator.LoadGame(file);
+
+            _emulator.Renderer.ForegroundColour = new Color(Properties.Settings.Default.ForegroundR, Properties.Settings.Default.ForegroundG, Properties.Settings.Default.ForegroundB);
+            _emulator.Renderer.BackgroundColour = new Color(Properties.Settings.Default.BackgroundR, Properties.Settings.Default.BackgroundG, Properties.Settings.Default.BackgroundB);
+
+            new Thread(_emulator.Run).Start();
+        }
+
+        private void ColourSettingsMenuItemOnClick(object sender, RoutedEventArgs e)
+        {
+            var window = new ColourSettings();
+            window.ShowDialog();
         }
     }
 }

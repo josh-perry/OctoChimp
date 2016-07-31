@@ -23,7 +23,8 @@
                 <MenuItem Header="Exit"/>
             </MenuItem>
             <MenuItem Header="Options">
-                <MenuItem Header="Colour settings ..."/>
+                <MenuItem Header="Colour settings ..."
+                          Click="ColourSettingsMenuItemOnClick"/>
             </MenuItem>
             <MenuItem Header="Tools">
                 <MenuItem Header="Disassembler ..."></MenuItem>

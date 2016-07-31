@@ -1,0 +1,62 @@
+﻿<Window x:Class="OctoChimpWPF.ColourSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OctoChimpWPF"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Colour Settings"
+        Height="148.093"
+        Width="240.89"
+        ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Text="Foreground"
+                Grid.Row="0"
+                Grid.Column="0"
+                VerticalAlignment="Center"/>
+            
+            <xctk:ColorPicker
+                x:Name="ForegroundColourPicker"
+                Grid.Row="0"
+                Grid.Column="1"
+                Height="24"/>
+
+            <TextBlock
+                Text="Background"
+                Grid.Row="1"
+                Grid.Column="0"
+                VerticalAlignment="Center"/>
+
+            <xctk:ColorPicker
+                x:Name="BackgroundColourPicker"
+                Grid.Row="1"
+                Grid.Column="1"
+                Height="24"/>
+        </Grid>
+
+        <Button
+            Grid.Row="1"
+            Width="120"
+            Margin="10"
+            Content="OK"
+            Click="OkButtonOnClick"/>
+    </Grid>
+</Window>

@@ -7,7 +7,7 @@ namespace OctoChimp
         private static void Main()
         {
             var emulator = new Emulator();
-            emulator.LoadGame(new FileInfo(@"C:\Users\Josh\Desktop\c8games\MAZE"));
+            emulator.LoadGame(new FileInfo(@"C:\Users\Josh\Desktop\c8games\KALEID"));
             emulator.Run();
         }
     }

@@ -48,5 +48,10 @@ namespace OctoChimp
         {
             _window.DispatchEvents();
         }
+
+        public void SetKeys()
+        {
+
+        }
     }
 }

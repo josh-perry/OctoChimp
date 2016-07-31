@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using SFML.Graphics;
+using SFML.Window;
 
 namespace OctoChimp
 {
@@ -55,7 +58,7 @@ namespace OctoChimp
         /// <summary>
         /// 
         /// </summary>
-        public byte[] Stack;
+        public ushort[] Stack;
 
         /// <summary>
         /// 
@@ -100,6 +103,26 @@ namespace OctoChimp
           0xF0, 0x80, 0xF0, 0x80, 0x80  // F
         };
 
+        private List<Keyboard.Key> _keyboardKeys = new List<Keyboard.Key>
+        {
+            Keyboard.Key.Numpad1,
+            Keyboard.Key.Numpad2,
+            Keyboard.Key.Numpad3,
+            Keyboard.Key.Numpad4,
+            Keyboard.Key.Numpad5,
+            Keyboard.Key.Numpad6,
+            Keyboard.Key.Numpad7,
+            Keyboard.Key.Numpad8,
+            Keyboard.Key.Numpad9,
+            Keyboard.Key.Numpad0,
+            Keyboard.Key.Add,
+            Keyboard.Key.Multiply,
+            Keyboard.Key.Return,
+            Keyboard.Key.Divide,
+            Keyboard.Key.Dash,
+            Keyboard.Key.Period
+        };
+
         private Random rnd;
 
         /// <summary>
@@ -120,7 +143,7 @@ namespace OctoChimp
             IndexRegister = new ushort();
             ProgramCounter = new ushort();
             Screen = new bool[64, 32];
-            Stack = new byte[16];
+            Stack = new ushort[16];
             Keys = new bool[16];
 
             ProgramCounter = 512;
@@ -172,7 +195,12 @@ namespace OctoChimp
         /// </summary>
         private void SetKeys()
         {
-
+            for (var index = 0; index < _keyboardKeys.Count; index++)
+            {
+                var key = _keyboardKeys[index];
+                
+                Keys[index] = Keyboard.IsKeyPressed(key);
+            }
         }
 
         /// <summary>
@@ -205,6 +233,10 @@ namespace OctoChimp
             // Decode + execute
             switch (CurrentOpcode & 0xF000)
             {
+                case 0x0000:
+                    _miscOpcodes(decodedOpcode);
+                    break;
+
                 case 0x1000:
                     decodedOpcode.Description = $"Jump to 0x{decodedOpcode.NNN.ToString("X")}";
                     _1NNN(decodedOpcode);
@@ -218,6 +250,11 @@ namespace OctoChimp
                 case 0x3000:
                     decodedOpcode.Description = $"Skip if V{decodedOpcode.X} == {decodedOpcode.NN.ToString("X")}";
                     _3XNN(decodedOpcode);
+                    break;
+
+                case 0x4000:
+                    decodedOpcode.Description = $"Skip if V{decodedOpcode.X} != {decodedOpcode.NN.ToString("X")}";
+                    _4XNN(decodedOpcode);
                     break;
 
                 case 0x6000:
@@ -248,8 +285,13 @@ namespace OctoChimp
                     decodedOpcode.Description = $"Sprite at V{decodedOpcode.X}, V{decodedOpcode.Y} ({VRegisters[decodedOpcode.X]}, {VRegisters[decodedOpcode.Y]})";
                     _DXYN(decodedOpcode);
                     break;
+
+                case 0xF000:
+                    _FNNN(decodedOpcode);
+                    break;
                 
                 default:
+                    //ProgramCounter += 2;
                     Debugger.Break();
                     break;
             }
@@ -261,6 +303,64 @@ namespace OctoChimp
 
         #region Opcodes
         /// <summary>
+        /// 
+        /// </summary>
+        private void _FNNN(DecodedOpcode decodedOpcode)
+        {
+            switch (decodedOpcode.N)
+            {
+                //case 0x7:
+                //    break;
+                case 0xA:
+                    if (!Keys.Any(x => x))
+                    {
+                        return;
+                    }
+                    
+                    break;
+                //case 0x8:
+                //    break;
+                case 0xE:
+                    IndexRegister += VRegisters[decodedOpcode.X];
+                    break;
+                //case 0x9:
+                //    break;
+                //case 0x3:
+                //    break;
+                //case 0x5:
+                //    break;
+                default:
+                    Debugger.Break();
+                    break;
+            }
+
+            ProgramCounter += 2;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _miscOpcodes(DecodedOpcode decodedOpcode)
+        {
+            // Return from subroutine.
+            if (decodedOpcode.Opcode == 0x00EE)
+            {
+                StackPointer--;
+                ProgramCounter = Stack[StackPointer];
+                ProgramCounter += 2;
+
+                return;
+            }
+
+            // Clears the screen.
+            if (decodedOpcode.Opcode == 0x00E0)
+            {
+                return;
+            }
+        }
+
+        /// <summary>
         /// Jumps to address NNN.   
         /// </summary>
         /// <param name="decodedOpcode"></param>
@@ -268,7 +368,7 @@ namespace OctoChimp
         {
             if (ProgramCounter == decodedOpcode.NNN)
             {
-               Debugger.Break();
+               //Debugger.Break();
             }
 
             ProgramCounter = decodedOpcode.NNN;
@@ -281,11 +381,11 @@ namespace OctoChimp
         private void _2NNN(DecodedOpcode decodedOpcode)
         {
             // Add to stack
-            Stack[StackPointer] = (byte) ProgramCounter;
+            Stack[StackPointer] = ProgramCounter;
             StackPointer++;
 
             // Jump to address
-            ProgramCounter = (ushort) (decodedOpcode.NNN + 512);
+            ProgramCounter = decodedOpcode.NNN;
         }
 
         /// <summary>
@@ -297,6 +397,20 @@ namespace OctoChimp
             ProgramCounter += 2;
 
             if (VRegisters[decodedOpcode.X] == decodedOpcode.NN)
+            {
+                ProgramCounter += 2;
+            }
+        }
+
+        /// <summary>
+        /// Skips the next instruction if VX doesn't equal NN.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _4XNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+
+            if (VRegisters[decodedOpcode.X] != decodedOpcode.NN)
             {
                 ProgramCounter += 2;
             }

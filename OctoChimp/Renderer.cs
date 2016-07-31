@@ -1,3 +1,4 @@
+using System;
 using SFML.Graphics;
 using SFML.Window;
 
@@ -5,24 +6,24 @@ namespace OctoChimp
 {
     public class Renderer
     {
-        private RenderWindow _window;
+        public RenderWindow Window;
 
-        private uint _screenWidth;
+        public uint ScreenWidth;
 
-        private uint _screenHeight;
+        public uint ScreenHeight;
 
         public Renderer(uint screenWidth, uint screenHeight)
         {
-            _screenWidth = screenWidth;
-            _screenHeight = screenHeight;
-
-            _window = new RenderWindow(new VideoMode(screenWidth, screenHeight), "OctoChimp");
-            _window.SetActive();
+            ScreenWidth = screenWidth;
+            ScreenHeight = screenHeight;
         }
 
         public void Update(bool[,] pixels)
         {
-            _window.Clear();
+            if (Window == null)
+                return;
+
+            Window.Clear();
 
             for (var x = 0; x < pixels.GetLength(0); x++)
             {
@@ -35,18 +36,24 @@ namespace OctoChimp
                         continue;
                     }
 
-                    var rectangle = new RectangleShape(new Vector2f(8f, 8f));
-                    rectangle.Position = new Vector2f(x * 8, y * 8);
-                    _window.Draw(rectangle);
+                    var rectangle = new RectangleShape(new Vector2f(8f, 8f)) {Position = new Vector2f(x*8, y*8)};
+                    Window.Draw(rectangle);
                 }
             }
 
-            _window.Display();
+            Window.Display();
         }
 
         public void WindowEvents()
         {
-            _window.DispatchEvents();
+            Window?.DispatchEvents();
+        }
+
+        public void RecreateWindow(IntPtr handle)
+        {
+            var context = new ContextSettings { DepthBits = 24 };
+            Window = new RenderWindow(handle, context);
+            Window.SetActive();
         }
     }
 }

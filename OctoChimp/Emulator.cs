@@ -18,7 +18,7 @@ namespace OctoChimp
             0x200-0xFFF - Program ROM and work RAM
         */
 
-        private Renderer Renderer;
+        public Renderer Renderer;
 
         /// <summary>
         /// The opcode about to be run. 2 bytes.
@@ -182,14 +182,7 @@ namespace OctoChimp
             while (Running)
             {
                 EmulateCycle();
-
-                Renderer.WindowEvents();
-
-                if (DrawFlag)
-                {
-                    DrawGraphics();
-                }
-
+                
                 SetKeys();
             }
         }
@@ -210,8 +203,13 @@ namespace OctoChimp
         /// <summary>
         /// 
         /// </summary>
-        private void DrawGraphics()
+        public void Rendering()
         {
+            Renderer.WindowEvents();
+
+            if (!DrawFlag)
+                return;
+
             Renderer.Update(Screen);
         }
         

@@ -125,6 +125,10 @@ namespace OctoChimp
 
         private Random rnd;
 
+        public ushort DelayTimer;
+
+        public ushort SoundTimer;
+
         /// <summary>
         /// 
         /// </summary>
@@ -299,8 +303,22 @@ namespace OctoChimp
             Console.WriteLine($"0x{PrevProgramCounter.ToString("X")}\t{decodedOpcode}");
 
             // Update timers
-        }
+            if (DelayTimer > 0)
+            {
+                DelayTimer--;
+            }
 
+            if (SoundTimer > 0)
+            {
+                if (SoundTimer == 1)
+                {
+                    Console.Beep();
+                }
+
+                SoundTimer--;
+            }
+        }
+        
         #region Opcodes
         /// <summary>
         /// 
@@ -325,8 +343,12 @@ namespace OctoChimp
                     break;
                 //case 0x9:
                 //    break;
-                //case 0x3:
-                //    break;
+                case 0x3:
+                    Memory[IndexRegister]     = (byte) (VRegisters[decodedOpcode.Y] / 100);
+                    Memory[IndexRegister + 1] = (byte) ((VRegisters[decodedOpcode.Y] / 10) % 10);
+                    Memory[IndexRegister + 2] = (byte) ((VRegisters[decodedOpcode.Y] % 100) % 10);
+
+                    break;
                 case 0x5:
                     if (decodedOpcode.NN == 0x55)
                     {
@@ -344,6 +366,20 @@ namespace OctoChimp
                         {
                             VRegisters[i] = Memory[IndexRegister + i];
                         }
+
+                        break;
+                    }
+
+                    if (decodedOpcode.NN == 0x15)
+                    {
+                        DelayTimer = VRegisters[decodedOpcode.X];
+
+                        break;
+                    }
+
+                    if (decodedOpcode.NN == 0x18)
+                    {
+                        SoundTimer = VRegisters[decodedOpcode.X];
 
                         break;
                     }
@@ -384,6 +420,9 @@ namespace OctoChimp
                         Screen[x, y] = false;
                     }
                 }
+
+                ProgramCounter += 2;
+                return;
             }
         }
 

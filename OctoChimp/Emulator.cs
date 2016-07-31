@@ -356,7 +356,13 @@ namespace OctoChimp
             // Clears the screen.
             if (decodedOpcode.Opcode == 0x00E0)
             {
-                return;
+                for (var x = 0; x < Screen.GetLength(0); x++)
+                {
+                    for (var y = 0; y < Screen.GetLength(1); y++)
+                    {
+                        Screen[x, y] = false;
+                    }
+                }
             }
         }
 

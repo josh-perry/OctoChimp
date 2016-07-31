@@ -10,12 +10,12 @@ A (very incomplete) Chip-8 Emulator written in C# (+ SFML.NET).
 Status| Opcode| Description
 :-----:|-----|-----
       | 0NNN| Calls RCA 1802 program at address NNN. Not necessary for most ROMs.
-      | 00E0| Clears the screen.
-      | 00EE| Returns from a subroutine.
+✔️     | 00E0| Clears the screen.
+✔️     | 00EE| Returns from a subroutine.
 ✔️     | 1NNN| Jumps to address NNN.
 ✔️     | 2NNN| Calls subroutine at NNN.
 ✔️     | 3XNN| Skips the next instruction if VX equals NN.
-      | 4XNN| Skips the next instruction if VX doesn't equal NN.
+✔️     | 4XNN| Skips the next instruction if VX doesn't equal NN.
       | 5XY0| Skips the next instruction if VX equals VY.
 ✔️     | 6XNN| Sets VX to NN.
 ✔️     | 7XNN| Adds NN to VX.
@@ -36,10 +36,10 @@ Status| Opcode| Description
       | EX9E| Skips the next instruction if the key stored in VX is pressed.
       | EXA1| Skips the next instruction if the key stored in VX isn't pressed.
       | FX07| Sets VX to the value of the delay timer.
-      | FX0A| A key press is awaited
+✔️     | FX0A| A key press is awaited
       | FX15| Sets the delay timer to VX.
       | FX18| Sets the sound timer to VX.
-      | FX1E| Adds VX to I.
+✔️     | FX1E| Adds VX to I.
       | FX29| Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
       | FX33| Stores the binary-coded decimal representation of VX
       | FX55| Stores V0 to VX (including VX) in memory starting at address I.

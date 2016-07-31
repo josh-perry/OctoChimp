@@ -16,7 +16,9 @@
         
         <Menu Grid.Row="0">
             <MenuItem Header="File">
-                <MenuItem Header="Open ROM ..."/>
+                <MenuItem
+                    Header="Open ROM ..."
+                    Click="OpenRomMenuItemOnClick"/>
                 <Separator/>
                 <MenuItem Header="Exit"/>
             </MenuItem>

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Windows;
 using System.Windows.Threading;
+using System.Windows.Forms;
 using OctoChimp;
 using SFML.Graphics;
-using SFML.Window;
 using Window = System.Windows.Window;
 
 namespace OctoChimpWPF
@@ -27,10 +28,6 @@ namespace OctoChimpWPF
             _timer = new DispatcherTimer { Interval = refreshRate };
             _timer.Tick += Timer_Tick;
             _timer.Start();
-
-            _emulator = new Emulator();
-            _emulator.LoadGame(new FileInfo(@"C:\Users\Josh\Desktop\c8games\MAZE"));
-            new Thread(_emulator.Run).Start();
 
             Closed += (sender, args) => Environment.Exit(0);
         }
@@ -56,10 +53,38 @@ namespace OctoChimpWPF
 
         private void DrawSurface_SizeChanged(object sender, EventArgs e)
         {
-            DrawSurface.Width = (int)_emulator.Renderer.ScreenWidth;
-            DrawSurface.Height = (int)_emulator.Renderer.ScreenHeight;
+            if(_emulator == null)
+                return;
 
             CreateRenderWindow();
+            ResizeWindow();
+        }
+
+        private void ResizeWindow()
+        {
+            DrawSurface.Width = (int)_emulator.Renderer.ScreenWidth;
+            DrawSurface.Height = (int)_emulator.Renderer.ScreenHeight;
+        }
+
+        private void OpenRomMenuItemOnClick(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            if (_emulator != null)
+            {
+                _emulator.Renderer.Window.SetActive(false);
+                _emulator.Renderer.Window.Dispose();
+            }
+
+            _emulator = new Emulator();
+            _emulator.LoadGame(new FileInfo(dialog.FileName));
+            new Thread(_emulator.Run).Start();
+
+            CreateRenderWindow();
+            ResizeWindow();
         }
     }
 }

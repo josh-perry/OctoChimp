@@ -327,8 +327,29 @@ namespace OctoChimp
                 //    break;
                 //case 0x3:
                 //    break;
-                //case 0x5:
-                //    break;
+                case 0x5:
+                    if (decodedOpcode.NN == 0x55)
+                    {
+                        for (var i = 0; i <= decodedOpcode.X; i++)
+                        {
+                            Memory[IndexRegister + i] = (byte) VRegisters[i];
+                        }
+
+                        break;
+                    }
+
+                    if (decodedOpcode.NN == 0x65)
+                    {
+                        for (var i = 0; i <= decodedOpcode.X; i++)
+                        {
+                            VRegisters[i] = Memory[IndexRegister + i];
+                        }
+
+                        break;
+                    }
+
+                    Debugger.Break();
+                    break;
                 default:
                     Debugger.Break();
                     break;
@@ -456,21 +477,25 @@ namespace OctoChimp
             {
                 // Sets VX to the value of VY.
                 case 0x0:
+                    decodedOpcode.Description = $"V{decodedOpcode.X} = V{decodedOpcode.Y}";
                     VRegisters[decodedOpcode.X] = VRegisters[decodedOpcode.Y];
                     break;
 
                 // Sets VX to VX or VY.
                 case 0x1:
+                    decodedOpcode.Description = $"V{decodedOpcode.X} = V{ decodedOpcode.X} | V{ decodedOpcode.Y}";
                     VRegisters[decodedOpcode.X] = (ushort) (VRegisters[decodedOpcode.X] | VRegisters[decodedOpcode.Y]);
                     break;
 
                 // Sets VX to VX and VY.
                 case 0x2:
+                    decodedOpcode.Description = $"V{decodedOpcode.X} = V{ decodedOpcode.X} & V{ decodedOpcode.Y}";
                     VRegisters[decodedOpcode.X] = (ushort)(VRegisters[decodedOpcode.X] & VRegisters[decodedOpcode.Y]);
                     break;
 
                 // Sets VX to VX xor VY.
                 case 0x3:
+                    decodedOpcode.Description = $"V{decodedOpcode.X} = V{ decodedOpcode.X} ^ V{ decodedOpcode.Y}";
                     VRegisters[decodedOpcode.X] = (ushort)(VRegisters[decodedOpcode.X] ^ VRegisters[decodedOpcode.Y]);
                     break;
 

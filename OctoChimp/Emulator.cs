@@ -216,7 +216,7 @@ namespace OctoChimp
         /// <summary>
         /// 
         /// </summary>
-        private void EmulateCycle()
+        public void EmulateCycle()
         {
             PrevProgramCounter = ProgramCounter;
 
@@ -652,6 +652,11 @@ namespace OctoChimp
 
             var bytes = File.ReadAllBytes(file.FullName);
 
+            LoadGame(bytes);
+        }
+
+        public void LoadGame(byte[] bytes)
+        {
             for (var index = 0; index < bytes.Length; index++)
             {
                 Memory[index + 512] = bytes[index];

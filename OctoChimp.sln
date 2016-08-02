@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoChimp", "OctoChimp\Octo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoChimpWPF", "OctoChimpWPF\OctoChimpWPF.csproj", "{8A1EE394-BC7B-443D-AAEE-E6E5E411028C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTests", "NUnitTests\NUnitTests.csproj", "{067456C0-086C-46A8-B37F-1405717B7BFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8A1EE394-BC7B-443D-AAEE-E6E5E411028C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A1EE394-BC7B-443D-AAEE-E6E5E411028C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A1EE394-BC7B-443D-AAEE-E6E5E411028C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{067456C0-086C-46A8-B37F-1405717B7BFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{067456C0-086C-46A8-B37F-1405717B7BFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{067456C0-086C-46A8-B37F-1405717B7BFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{067456C0-086C-46A8-B37F-1405717B7BFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

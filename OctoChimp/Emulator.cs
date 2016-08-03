@@ -286,7 +286,11 @@ namespace OctoChimp
                     decodedOpcode.Description = $"I = {decodedOpcode.NNN.ToString("X")}";
                     _ANNN(decodedOpcode);
                     break;
-                
+
+                case 0xB000:
+                    _BNNN(decodedOpcode);
+                    break;
+
                 case 0xC000:
                     decodedOpcode.Description = $"V{decodedOpcode.X} = RNG & {decodedOpcode.NN.ToString("X")}";
                     _CXNN(decodedOpcode);
@@ -631,6 +635,15 @@ namespace OctoChimp
         {
             ProgramCounter += 2;
             IndexRegister = decodedOpcode.NNN;
+        }
+
+        /// <summary>
+        /// Jumps to the address NNN plus V0.
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _BNNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter = (ushort) (decodedOpcode.NNN + VRegisters[0x0]);
         }
 
         /// <summary>

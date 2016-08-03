@@ -35,7 +35,7 @@ Status| Opcode| Description
       | 8XYE| Shifts VX left by one. VF is set to the value of the most significant bit of VX before the shift.
 ✔️     | 9XY0| Skips the next instruction if VX doesn't equal VY.
 ✔️     | ANNN| Sets I to the address NNN.
-      | BNNN| Jumps to the address NNN plus V0.
+✔️     | BNNN| Jumps to the address NNN plus V0.
 ✔️     | CXNN| Sets VX to the result of a bitwise and operation on a random number and NN.
 ✔️     | DXYN| Draws a sprite at coordinate (VX
       | EX9E| Skips the next instruction if the key stored in VX is pressed.

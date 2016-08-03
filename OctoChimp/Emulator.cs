@@ -259,6 +259,11 @@ namespace OctoChimp
                     _4XNN(decodedOpcode);
                     break;
 
+                case 0x5000:
+                    decodedOpcode.Description = $"Skip if V{decodedOpcode.X} == V{decodedOpcode.Y}";
+                    _5XY0(decodedOpcode);
+                    break;
+
                 case 0x6000:
                     decodedOpcode.Description = $"V{decodedOpcode.X} = {decodedOpcode.NN.ToString("X")}";
                     _6XNN(decodedOpcode);
@@ -316,7 +321,7 @@ namespace OctoChimp
                 SoundTimer--;
             }
         }
-        
+
         #region Opcodes
         /// <summary>
         /// 
@@ -475,6 +480,20 @@ namespace OctoChimp
             ProgramCounter += 2;
 
             if (VRegisters[decodedOpcode.X] != decodedOpcode.NN)
+            {
+                ProgramCounter += 2;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="decodedOpcode"></param>
+        private void _5XY0(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+
+            if (VRegisters[decodedOpcode.X] == VRegisters[decodedOpcode.Y])
             {
                 ProgramCounter += 2;
             }

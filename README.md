@@ -21,7 +21,7 @@ Status| Opcode| Description
 ✔️     | 2NNN| Calls subroutine at NNN.
 ✔️     | 3XNN| Skips the next instruction if VX equals NN.
 ✔️     | 4XNN| Skips the next instruction if VX doesn't equal NN.
-      | 5XY0| Skips the next instruction if VX equals VY.
+✔️     | 5XY0| Skips the next instruction if VX equals VY.
 ✔️     | 6XNN| Sets VX to NN.
 ✔️     | 7XNN| Adds NN to VX.
 ✔️     | 8XY0| Sets VX to the value of VY.

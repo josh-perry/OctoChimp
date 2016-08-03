@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -125,7 +126,7 @@ namespace OctoChimp
 
         private Random rnd;
 
-        public ushort DelayTimer;
+        public byte DelayTimer;
 
         public ushort SoundTimer;
 
@@ -192,6 +193,11 @@ namespace OctoChimp
         /// </summary>
         private void SetKeys()
         {
+            for (var index = 0; index < Keys.Length; index++)
+            {
+                Keys[index] = false;
+            }
+
             for (var index = 0; index < _keyboardKeys.Count; index++)
             {
                 var key = _keyboardKeys[index];
@@ -352,13 +358,20 @@ namespace OctoChimp
                     }
                     
                     break;
-                //case 0x8:
-                //    break;
+                case 0x8:
+                    // Sets the sound timer to VX.
+                    if (decodedOpcode.NN == 0x18)
+                    {
+                        SoundTimer = VRegisters[decodedOpcode.X];
+                    }
+
+                    break;
                 case 0xE:
                     IndexRegister += VRegisters[decodedOpcode.X];
                     break;
-                //case 0x9:
-                //    break;
+                case 0x9:
+                    IndexRegister = Memory[VRegisters[decodedOpcode.X]];
+                    break;
                 case 0x3:
                     Memory[IndexRegister]     = (byte) (VRegisters[decodedOpcode.Y] / 100);
                     Memory[IndexRegister + 1] = (byte) ((VRegisters[decodedOpcode.Y] / 10) % 10);
@@ -366,6 +379,7 @@ namespace OctoChimp
 
                     break;
                 case 0x5:
+                    // Stores V0 to VX (including VX) in memory starting at address I.
                     if (decodedOpcode.NN == 0x55)
                     {
                         for (var i = 0; i <= decodedOpcode.X; i++)
@@ -376,6 +390,7 @@ namespace OctoChimp
                         break;
                     }
 
+                    // Fills V0 to VX (including VX) with values from memory starting at address I.
                     if (decodedOpcode.NN == 0x65)
                     {
                         for (var i = 0; i <= decodedOpcode.X; i++)
@@ -386,16 +401,10 @@ namespace OctoChimp
                         break;
                     }
 
+                    // Sets the delay timer to VX.
                     if (decodedOpcode.NN == 0x15)
                     {
-                        DelayTimer = VRegisters[decodedOpcode.X];
-
-                        break;
-                    }
-
-                    if (decodedOpcode.NN == 0x18)
-                    {
-                        SoundTimer = VRegisters[decodedOpcode.X];
+                        DelayTimer = (byte) VRegisters[decodedOpcode.X];
 
                         break;
                     }

@@ -33,7 +33,7 @@ Status| Opcode| Description
       | 8XY6| Shifts VX right by one. VF is set to the value of the least significant bit of VX before the shift.
       | 8XY7| Sets VX to VY minus VX. VF is set to 0 when there's a borrow
       | 8XYE| Shifts VX left by one. VF is set to the value of the most significant bit of VX before the shift.
-      | 9XY0| Skips the next instruction if VX doesn't equal VY.
+✔️     | 9XY0| Skips the next instruction if VX doesn't equal VY.
 ✔️     | ANNN| Sets I to the address NNN.
       | BNNN| Jumps to the address NNN plus V0.
 ✔️     | CXNN| Sets VX to the result of a bitwise and operation on a random number and NN.

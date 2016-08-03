@@ -277,6 +277,10 @@ namespace OctoChimp
                 case 0x8000:
                     _8XYN(decodedOpcode);
                     break;
+
+                case 0x9000:
+                    _9XY0(decodedOpcode);
+                    break;
                 
                 case 0xA000:
                     decodedOpcode.Description = $"I = {decodedOpcode.NNN.ToString("X")}";
@@ -486,7 +490,7 @@ namespace OctoChimp
         }
 
         /// <summary>
-        /// 
+        /// Skips the next instruction if VX equals VY.
         /// </summary>
         /// <param name="decodedOpcode"></param>
         private void _5XY0(DecodedOpcode decodedOpcode)
@@ -603,6 +607,19 @@ namespace OctoChimp
             }
 
             ProgramCounter += 2;
+        }
+
+        /// <summary>
+        /// Skips the next instruction if VX doesn't equal VY.
+        /// </summary>
+        private void _9XY0(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+
+            if (VRegisters[decodedOpcode.X] != VRegisters[decodedOpcode.Y])
+            {
+                ProgramCounter += 2;
+            }
         }
 
         /// <summary>

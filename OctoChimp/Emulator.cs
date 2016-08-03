@@ -106,22 +106,22 @@ namespace OctoChimp
 
         private List<Keyboard.Key> _keyboardKeys = new List<Keyboard.Key>
         {
-            Keyboard.Key.Numpad1,
-            Keyboard.Key.Numpad2,
-            Keyboard.Key.Numpad3,
-            Keyboard.Key.Numpad4,
-            Keyboard.Key.Numpad5,
-            Keyboard.Key.Numpad6,
-            Keyboard.Key.Numpad7,
-            Keyboard.Key.Numpad8,
-            Keyboard.Key.Numpad9,
-            Keyboard.Key.Numpad0,
-            Keyboard.Key.Add,
-            Keyboard.Key.Multiply,
-            Keyboard.Key.Return,
-            Keyboard.Key.Divide,
-            Keyboard.Key.Dash,
-            Keyboard.Key.Period
+            Keyboard.Key.X,
+            Keyboard.Key.Num1,
+            Keyboard.Key.Num2,
+            Keyboard.Key.Num3,
+            Keyboard.Key.Num4,
+            Keyboard.Key.Q,
+            Keyboard.Key.W,
+            Keyboard.Key.E,
+            Keyboard.Key.R,
+            Keyboard.Key.A,
+            Keyboard.Key.S,
+            Keyboard.Key.D,
+            Keyboard.Key.F,
+            Keyboard.Key.Z,
+            Keyboard.Key.C,
+            Keyboard.Key.V
         };
 
         private Random rnd;

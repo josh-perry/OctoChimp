@@ -334,8 +334,9 @@ namespace OctoChimp
         {
             switch (decodedOpcode.N)
             {
-                //case 0x7:
-                //    break;
+                case 0x7:
+                    VRegisters[decodedOpcode.X] = DelayTimer;
+                    break;
                 case 0xA:
                     if (!Keys.Any(x => x))
                     {

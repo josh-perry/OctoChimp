@@ -301,6 +301,10 @@ namespace OctoChimp
                     _DXYN(decodedOpcode);
                     break;
 
+                case 0xE000:
+                    _EXNN(decodedOpcode);
+                    break;
+
                 case 0xF000:
                     _FNNN(decodedOpcode);
                     break;
@@ -687,6 +691,29 @@ namespace OctoChimp
                     }
 
                     Screen[pixelX + VRegisters[decodedOpcode.X], pixelY + VRegisters[decodedOpcode.Y]] = !screenPixel;
+                }
+            }
+        }
+
+        private void _EXNN(DecodedOpcode decodedOpcode)
+        {
+            ProgramCounter += 2;
+
+            // Skips the next instruction if the key stored in VX is pressed.
+            if (decodedOpcode.N == 0xE)
+            {
+                if (Keys[VRegisters[decodedOpcode.X]])
+                {
+                    ProgramCounter += 2;
+                }
+            }
+
+            // Skips the next instruction if the key stored in VX isn't pressed.
+            if (decodedOpcode.N == 0x1)
+            {
+                if (!Keys[VRegisters[decodedOpcode.X]])
+                {
+                    ProgramCounter += 2;
                 }
             }
         }

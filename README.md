@@ -38,8 +38,8 @@ Status| Opcode| Description
 ✔️     | BNNN| Jumps to the address NNN plus V0.
 ✔️     | CXNN| Sets VX to the result of a bitwise and operation on a random number and NN.
 ✔️     | DXYN| Draws a sprite at coordinate (VX
-      | EX9E| Skips the next instruction if the key stored in VX is pressed.
-      | EXA1| Skips the next instruction if the key stored in VX isn't pressed.
+✔️     | EX9E| Skips the next instruction if the key stored in VX is pressed.
+✔️     | EXA1| Skips the next instruction if the key stored in VX isn't pressed.
 ✔️     | FX07| Sets VX to the value of the delay timer.
 ✔️     | FX0A| A key press is awaited
 ✔️     | FX15| Sets the delay timer to VX.

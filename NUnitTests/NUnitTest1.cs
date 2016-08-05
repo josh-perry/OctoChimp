@@ -15,6 +15,87 @@ namespace NUnitTests
         }
 
         [Test]
+        public void Opcode3XNN_ValidInput_CorrectOutput()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                0x60, 0x01, // Set VRegister[0] to 0x01
+                0x30, 0x01, // If VRegister[0] == 0x01
+                0x00, 0xE0, // Skip this instruction
+                0x60, 0x02  // Set VRegister[0] to 0x02
+            };
+
+            _emulator.LoadGame(rom);
+            
+            // Act + assert
+            Assert.True(_emulator.ProgramCounter == 512);
+
+            _emulator.EmulateCycle();
+            Assert.True(_emulator.ProgramCounter == 514);
+
+            _emulator.EmulateCycle();
+            Assert.True(_emulator.ProgramCounter == 518);
+
+            _emulator.EmulateCycle();
+            Assert.True(_emulator.ProgramCounter == 520);
+        }
+
+        [Test]
+        public void Opcode4XNN_ValidInput_CorrectOutput()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                0x60, 0x00, // Set VRegister[0] to 0x00
+                0x40, 0x01, // If VRegister[0] != 0x01
+                0x00, 0xE0, // Skip this instruction
+                0x00, 0xE0
+            };
+
+            _emulator.LoadGame(rom);
+
+            // Act + assert
+            Assert.True(_emulator.ProgramCounter == 512);
+            _emulator.EmulateCycle();
+
+            Assert.True(_emulator.ProgramCounter == 514);
+            _emulator.EmulateCycle();
+
+            Assert.True(_emulator.ProgramCounter == 518);
+            _emulator.EmulateCycle();
+        }
+
+        [Test]
+        public void Opcode5XY0_ValidInput_CorrectOutput()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                0x60, 0x01, // Set VRegister[0] to 0x01
+                0x61, 0x01, // Set VRegister[1] to 0x01
+                0x50, 0x10, // If VRegister[0] == VRegister[1]
+                0x00, 0xE0, // Skip this instruction
+                0x00, 0xE0
+            };
+
+            _emulator.LoadGame(rom);
+
+            // Act + assert
+            Assert.True(_emulator.ProgramCounter == 512);
+            _emulator.EmulateCycle();
+
+            Assert.True(_emulator.ProgramCounter == 514);
+            _emulator.EmulateCycle();
+
+            Assert.True(_emulator.ProgramCounter == 516);
+            _emulator.EmulateCycle();
+
+            Assert.True(_emulator.ProgramCounter == 520);
+            _emulator.EmulateCycle();
+        }
+
+        [Test]
         public void Opcode6XNN_ValidInput_CorrectOutput()
         {
             // Arrange

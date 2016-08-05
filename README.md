@@ -19,9 +19,9 @@ A (very incomplete) Chip-8 Emulator written in C# (+ SFML.NET).
   ✔️     | 00EE   | Returns from a subroutine.                                                                                                       |
   ✔️     | 1NNN   | Jumps to address NNN.                                                                                                            |
   ✔️     | 2NNN   | Calls subroutine at NNN.                                                                                                         |
-  ✔️     | 3XNN   | Skips the next instruction if VX equals NN.                                                                                      |
-  ✔️     | 4XNN   | Skips the next instruction if VX doesn't equal NN.                                                                               |
-  ✔️     | 5XY0   | Skips the next instruction if VX equals VY.                                                                                      |
+  ✔️     | 3XNN   | Skips the next instruction if VX equals NN.                                                                                      | 1
+  ✔️     | 4XNN   | Skips the next instruction if VX doesn't equal NN.                                                                               | 1
+  ✔️     | 5XY0   | Skips the next instruction if VX equals VY.                                                                                      | 1
   ✔️     | 6XNN   | Sets VX to NN.                                                                                                                   | 1
   ✔️     | 7XNN   | Adds NN to VX.                                                                                                                   | 1
   ✔️     | 8XY0   | Sets VX to the value of VY.                                                                                                      | 1

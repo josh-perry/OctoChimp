@@ -249,5 +249,49 @@ namespace NUnitTests
             Assert.True(_emulator.VRegisters[0] == (2 ^ 3));
             Assert.True(_emulator.VRegisters[0] == 1);
         }
+
+        [Test]
+        public void OpcodeFX15_ValidInput_CorrectOutput()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                0xF1, 0x15
+            };
+
+            _emulator.LoadGame(rom);
+
+            _emulator.VRegisters[1] = 2;
+
+            _emulator.DelayTimer = 0;
+
+            // Act
+            _emulator.EmulateCycle();
+
+            // Assert
+            Assert.True(_emulator.DelayTimer == 1); // 2 - 1
+        }
+
+        [Test]
+        public void OpcodeFX18_ValidInput_CorrectOutput()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                0xF1, 0x18
+            };
+
+            _emulator.LoadGame(rom);
+
+            _emulator.VRegisters[1] = 2;
+
+            _emulator.SoundTimer = 0;
+
+            // Act
+            _emulator.EmulateCycle();
+
+            // Assert
+            Assert.True(_emulator.SoundTimer == 1); // 2 - 1
+        }
     }
 }

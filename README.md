@@ -42,8 +42,8 @@ A (very incomplete) Chip-8 Emulator written in C# (+ SFML.NET).
   ✔️     | EXA1   | Skips the next instruction if the key stored in VX isn't pressed.                                                                |
   ✔️     | FX07   | Sets VX to the value of the delay timer.                                                                                         |
   ✔️     | FX0A   | A key press is awaited                                                                                                           |
-  ✔️     | FX15   | Sets the delay timer to VX.                                                                                                      |
-  ✔️     | FX18   | Sets the sound timer to VX.                                                                                                      |
+  ✔️     | FX15   | Sets the delay timer to VX.                                                                                                      | 1
+  ✔️     | FX18   | Sets the sound timer to VX.                                                                                                      | 1
   ✔️     | FX1E   | Adds VX to I.                                                                                                                    |
         | FX29   | Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.     |
   ✔️     | FX33   | Stores the binary-coded decimal representation of VX                                                                             |

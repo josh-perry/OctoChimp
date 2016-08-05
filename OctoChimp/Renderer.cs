@@ -16,6 +16,8 @@ namespace OctoChimp
 
         public Color ForegroundColour { get; set; }
 
+        public float PixelSize => 8f;
+
         public Renderer(uint screenWidth, uint screenHeight)
         {
             ScreenWidth = screenWidth;
@@ -40,7 +42,7 @@ namespace OctoChimp
                         continue;
                     }
 
-                    var rectangle = new RectangleShape(new Vector2f(8f, 8f)) {Position = new Vector2f(x*8, y*8)};
+                    var rectangle = new RectangleShape(new Vector2f(PixelSize, PixelSize)) {Position = new Vector2f(x*PixelSize, y*PixelSize) };
                     rectangle.FillColor = ForegroundColour;
                     rectangle.OutlineColor = ForegroundColour;
                     Window.Draw(rectangle);

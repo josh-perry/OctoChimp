@@ -144,5 +144,29 @@ namespace NUnitTests
             Assert.True(_emulator.VRegisters[0] == (2 & 3));
             Assert.True(_emulator.VRegisters[0] == 2);
         }
+
+        [Test]
+        public void Opcode8XY3_ValidInput_CorrectOutput()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                // Sets vregister 0 to vregister 0 ^ vregister 1
+                0x80, 0x13
+            };
+
+            _emulator.LoadGame(rom);
+
+            // Set initial register values
+            _emulator.VRegisters[0] = 0x02;
+            _emulator.VRegisters[1] = 0x03;
+
+            // Act
+            _emulator.EmulateCycle();
+
+            // Assert
+            Assert.True(_emulator.VRegisters[0] == (2 ^ 3));
+            Assert.True(_emulator.VRegisters[0] == 1);
+        }
     }
 }

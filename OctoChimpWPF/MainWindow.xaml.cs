@@ -4,9 +4,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using OctoChimp;
-using SFML.Graphics;
-using Window = System.Windows.Window;
 
 namespace OctoChimpWPF
 {
@@ -22,8 +22,6 @@ namespace OctoChimpWPF
         {
             InitializeComponent();
 
-            CreateRenderWindow();
-
             var refreshRate = new TimeSpan(0, 0, 0, 0, 1000 / 60);
             _timer = new DispatcherTimer { Interval = refreshRate };
             _timer.Tick += Timer_Tick;
@@ -32,38 +30,30 @@ namespace OctoChimpWPF
             Closed += (sender, args) => Environment.Exit(0);
         }
 
-        private void CreateRenderWindow()
+        private void Timer_Tick(object sender, EventArgs e)
         {
             if (_emulator == null)
                 return;
 
-            if (_emulator.Renderer.Window != null)
-            {
-                _emulator.Renderer.Window.SetActive(false);
-                _emulator.Renderer.Window.Dispose();
-            }
-
-            _emulator.Renderer.Window = new RenderWindow(DrawSurface.Handle);
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            _emulator?.Rendering();
-        }
-
-        private void DrawSurface_SizeChanged(object sender, EventArgs e)
-        {
-            if(_emulator == null)
+            if (!_emulator.DrawFlag)
                 return;
 
-            CreateRenderWindow();
-            ResizeWindow();
-        }
+            var frame = BitmapFactory.New(64, 48);
 
-        private void ResizeWindow()
-        {
-            DrawSurface.Width = (int)_emulator.Renderer.ScreenWidth;
-            DrawSurface.Height = (int)_emulator.Renderer.ScreenHeight;
+            var pixels = _emulator.Screen;
+
+            for (var x = 0; x < pixels.GetLength(0); x++)
+            {
+                for (var y = 0; y < pixels.GetLength(1); y++)
+                {
+                    if (pixels[x, y])
+                        frame.SetPixel(x, y, Properties.Settings.Default.ForegroundR, Properties.Settings.Default.ForegroundG, Properties.Settings.Default.ForegroundB);
+                    else
+                        frame.SetPixel(x, y, Properties.Settings.Default.BackgroundR, Properties.Settings.Default.BackgroundG, Properties.Settings.Default.BackgroundB);
+                }
+            }
+
+            FrameImage.Source = frame;
         }
 
         private void OpenRomMenuItemOnClick(object sender, RoutedEventArgs e)
@@ -73,25 +63,13 @@ namespace OctoChimpWPF
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
 
-            if (_emulator != null)
-            {
-                _emulator.Renderer.Window.SetActive(false);
-                _emulator.Renderer.Window.Dispose();
-            }
-
             NewEmulator(new FileInfo(dialog.FileName));
-
-            CreateRenderWindow();
-            ResizeWindow();
         }
 
         private void NewEmulator(FileInfo file)
         {
             _emulator = new Emulator();
             _emulator.LoadGame(file);
-
-            _emulator.Renderer.ForegroundColour = new Color(Properties.Settings.Default.ForegroundR, Properties.Settings.Default.ForegroundG, Properties.Settings.Default.ForegroundB);
-            _emulator.Renderer.BackgroundColour = new Color(Properties.Settings.Default.BackgroundR, Properties.Settings.Default.BackgroundG, Properties.Settings.Default.BackgroundB);
 
             new Thread(_emulator.Run).Start();
         }

@@ -20,9 +20,9 @@ namespace NUnitTests
             // Arrange
             var rom = new byte[]
             {
-                0x30, 0xFF,
-                0x31, 0x01,
-                0x32, 0x02,
+                0x60, 0xFF,
+                0x61, 0x01,
+                0x62, 0x02,
             };
 
             _emulator.LoadGame(rom);
@@ -33,9 +33,9 @@ namespace NUnitTests
             _emulator.EmulateCycle();
 
             // Assert
-            Assert.Equals(_emulator.VRegisters[0], 0xFF);
-            Assert.Equals(_emulator.VRegisters[1], 0x01);
-            Assert.Equals(_emulator.VRegisters[2], 0x02);
+            Assert.True(_emulator.VRegisters[0] == 0xFF);
+            Assert.True(_emulator.VRegisters[1] == 0x01);
+            Assert.True(_emulator.VRegisters[2] == 0x02);
         }
     }
 }

@@ -12,8 +12,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <Menu Grid.Row="0">
             <MenuItem Header="File">
                 <MenuItem
@@ -35,15 +36,18 @@
             </MenuItem>
         </Menu>
 
-        <WindowsFormsHost Grid.Row="1">
-            <WindowsFormsHost.Child>
-                <local:SfmlDrawingSurface
-                    x:Name="DrawSurface"
-                    SizeChanged="DrawSurface_SizeChanged"/>
-            </WindowsFormsHost.Child>
-        </WindowsFormsHost>
+        <Image
+            Grid.Row="1"
+            x:Name="FrameImage"
+            RenderOptions.BitmapScalingMode="NearestNeighbor"
+            Stretch="UniformToFill"
+            HorizontalAlignment="Stretch"/>
     </Grid>
 </Window>
+ 
+ 
+ 
+
  
  
  

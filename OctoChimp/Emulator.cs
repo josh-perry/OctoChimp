@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using SFML.Graphics;
-using SFML.Window;
+
 
 namespace OctoChimp
 {
@@ -18,8 +16,6 @@ namespace OctoChimp
             0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
             0x200-0xFFF - Program ROM and work RAM
         */
-
-        public Renderer Renderer;
 
         /// <summary>
         /// The opcode about to be run. 2 bytes.
@@ -104,26 +100,6 @@ namespace OctoChimp
           0xF0, 0x80, 0xF0, 0x80, 0x80  // F
         };
 
-        private List<Keyboard.Key> _keyboardKeys = new List<Keyboard.Key>
-        {
-            Keyboard.Key.X,
-            Keyboard.Key.Num1,
-            Keyboard.Key.Num2,
-            Keyboard.Key.Num3,
-            Keyboard.Key.Num4,
-            Keyboard.Key.Q,
-            Keyboard.Key.W,
-            Keyboard.Key.E,
-            Keyboard.Key.R,
-            Keyboard.Key.A,
-            Keyboard.Key.S,
-            Keyboard.Key.D,
-            Keyboard.Key.F,
-            Keyboard.Key.Z,
-            Keyboard.Key.C,
-            Keyboard.Key.V
-        };
-
         private Random rnd;
 
         public byte DelayTimer;
@@ -156,8 +132,6 @@ namespace OctoChimp
             rnd = new Random();
 
             LoadFont();
-
-            Renderer = new Renderer(64*8, 32*8);
         }
 
         /// <summary>
@@ -197,26 +171,6 @@ namespace OctoChimp
             {
                 Keys[index] = false;
             }
-
-            for (var index = 0; index < _keyboardKeys.Count; index++)
-            {
-                var key = _keyboardKeys[index];
-                
-                Keys[index] = Keyboard.IsKeyPressed(key);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Rendering()
-        {
-            Renderer.WindowEvents();
-
-            if (!DrawFlag)
-                return;
-
-            Renderer.Update(Screen);
         }
         
         /// <summary>

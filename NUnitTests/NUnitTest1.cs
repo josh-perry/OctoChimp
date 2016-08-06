@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using OctoChimp;
 
 namespace NUnitTests
@@ -12,6 +13,32 @@ namespace NUnitTests
         public void SetUp()
         {
             _emulator = new Emulator();
+        }
+
+        [Test]
+        public void Opcode00E0_ValidInput_CorrectOutput()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                0x00, 0xE0
+            };
+
+            _emulator.LoadGame(rom);
+
+            _emulator.Screen[0, 0] = true;
+            _emulator.Screen[1, 0] = true;
+            _emulator.Screen[2, 0] = true;
+            _emulator.Screen[3, 0] = true;
+            _emulator.Screen[4, 0] = true;
+
+            Assert.IsTrue(_emulator.Screen.Cast<bool>().Count(x => x) > 0);
+
+            // Act
+            _emulator.EmulateCycle();
+
+            // Assert
+            Assert.IsTrue(_emulator.Screen.Cast<bool>().Count(x => x) == 0);
         }
 
         [Test]

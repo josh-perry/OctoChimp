@@ -15,7 +15,7 @@ A (very incomplete) Chip-8 Emulator written in C# (+ SFML.NET).
  Status | Opcode | Description                                                                                                                      | Tests
 :------:|--------|----------------------------------------------------------------------------------------------------------------------------------|-----
         | 0NNN   | Calls RCA 1802 program at address NNN. Not necessary for most ROMs.                                                              |
-  ✔️     | 00E0   | Clears the screen.                                                                                                               |
+  ✔️     | 00E0   | Clears the screen.                                                                                                               | 1
   ✔️     | 00EE   | Returns from a subroutine.                                                                                                       |
   ✔️     | 1NNN   | Jumps to address NNN.                                                                                                            |
   ✔️     | 2NNN   | Calls subroutine at NNN.                                                                                                         |

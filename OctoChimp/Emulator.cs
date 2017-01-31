@@ -84,22 +84,22 @@ namespace OctoChimp
         /// </summary>
         private static byte[] _fontSet =
         {
-          0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-          0x20, 0x60, 0x20, 0x20, 0x70, // 1
-          0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-          0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-          0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-          0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-          0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-          0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-          0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-          0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-          0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-          0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-          0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-          0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-          0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-          0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+            0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+            0x20, 0x60, 0x20, 0x20, 0x70, // 1
+            0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+            0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+            0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+            0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+            0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+            0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+            0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+            0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+            0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+            0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+            0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+            0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+            0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+            0xF0, 0x80, 0xF0, 0x80, 0x80  // F
         };
 
         private Random rnd;
@@ -134,6 +134,7 @@ namespace OctoChimp
             rnd = new Random();
 
             LoadFont();
+            SetKeys();
 
             InstructionsExecuted = 0;
         }
@@ -160,9 +161,7 @@ namespace OctoChimp
 
             while (Running)
             {
-                EmulateCycle();
-                
-                SetKeys();
+                EmulateCycle();   
             }
         }
 
@@ -642,23 +641,29 @@ namespace OctoChimp
 
             for (var pixelY = 0; pixelY < decodedOpcode.N; pixelY++)
             {
-                var pixel = Memory[IndexRegister + pixelY];
+                var spriteLine = Memory[IndexRegister + pixelY];
 
                 for (var pixelX = 0; pixelX < 8; pixelX++)
                 {
-                    if ((pixel & (0x80 >> pixelX)) == 0)
+                    if ((spriteLine & (0x80 >> pixelX)) == 0)
                     {
                         continue;
                     }
 
-                    var screenPixel = Screen[pixelX + VRegisters[decodedOpcode.X], pixelY + VRegisters[decodedOpcode.Y]];
-
-                    if (screenPixel)
+                    try
                     {
-                        VRegisters[0xF] = 1;
-                    }
+                        var x = pixelX + VRegisters[decodedOpcode.X];
+                        var y = pixelY + VRegisters[decodedOpcode.Y];
 
-                    Screen[pixelX + VRegisters[decodedOpcode.X], pixelY + VRegisters[decodedOpcode.Y]] = !screenPixel;
+                        if (ToggleScreenPixel(x, y))
+                        {
+                            VRegisters[0xF] = 1;
+                        }
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        continue;
+                    }
                 }
             }
         }
@@ -686,6 +691,14 @@ namespace OctoChimp
             }
         }
         #endregion
+
+        private bool ToggleScreenPixel(int x, int y)
+        {
+            var flippedFromSet = Screen[x, y];
+            Screen[x, y] = !Screen[x, y];
+
+            return flippedFromSet;
+        }
 
         /// <summary>
         /// 

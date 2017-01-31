@@ -320,5 +320,49 @@ namespace NUnitTests
             // Assert
             Assert.True(_emulator.SoundTimer == 1); // 2 - 1
         }
+
+        [Test]
+        public void OpCodeEX9E_KeyPressed_SkipInstruction()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                0xE0, 0x9E,
+                0xFF, 0xFF,
+                0x00, 0xE0
+            };
+
+            _emulator.LoadGame(rom);
+            _emulator.Keys[0x0] = true;
+            _emulator.VRegisters[0] = 0x0;
+
+            // Act
+            _emulator.EmulateCycle();
+
+            // Assert
+            Assert.IsTrue(_emulator.ProgramCounter == 512 + 4);
+        }
+
+        [Test]
+        public void OpCodeEX9E_KeyNotPressed_NoSkipInstruction()
+        {
+            // Arrange
+            var rom = new byte[]
+            {
+                0xE0, 0x9E,
+                0xFF, 0xFF,
+                0x00, 0xE0
+            };
+
+            _emulator.LoadGame(rom);
+            _emulator.Keys[0x0] = false;
+            _emulator.VRegisters[0] = 0x0;
+
+            // Act
+            _emulator.EmulateCycle();
+
+            // Assert
+            Assert.IsTrue(_emulator.ProgramCounter == 512 + 2);
+        }
     }
 }

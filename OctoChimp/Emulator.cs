@@ -565,18 +565,24 @@ namespace OctoChimp
                     VRegisters[decodedOpcode.X] -= VRegisters[decodedOpcode.Y];
                     break;
                 
-                // TODO: These.
                 // Shifts VX right by one. VF is set to the value of the least significant bit of VX before the shift.
-                //case 0x6:
-                //    break;
+                case 0x6:
+                    VRegisters[0xF] = (ushort) (VRegisters[decodedOpcode.Y] & 0x01);
+                    VRegisters[decodedOpcode.X] = (ushort) (VRegisters[decodedOpcode.X] >> 1);
+                    break;
 
                 // Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-                //case 0x7:
-                //    break;
+                case 0x7:
+                    // Set 0xF to 0 if there's a borrow
+                    VRegisters[0xF] = (ushort) (VRegisters[decodedOpcode.Y] >= VRegisters[decodedOpcode.X] ? 1 : 0);
+                    VRegisters[decodedOpcode.X] = (ushort) (VRegisters[decodedOpcode.Y] - VRegisters[decodedOpcode.X]);
+                    break;
 
                 // Shifts VX left by one. VF is set to the value of the most significant bit of VX before the shift.
-                //case 0xE:
-                //    break;
+                case 0xE:
+                    VRegisters[0xF] = (ushort) ((VRegisters[decodedOpcode.Y] >> 7) & 0x01);
+                    VRegisters[decodedOpcode.X] = (ushort) (VRegisters[decodedOpcode.Y] << 1);
+                    break;
 
                 default:
                     throw new Exception($"Unknown opcode: {decodedOpcode}");

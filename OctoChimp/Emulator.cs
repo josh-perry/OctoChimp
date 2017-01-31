@@ -77,6 +77,8 @@ namespace OctoChimp
         /// </summary>
         public bool DrawFlag => true;
 
+        public int InstructionsExecuted = 0;
+
         /// <summary>
         /// 
         /// </summary>
@@ -132,6 +134,8 @@ namespace OctoChimp
             rnd = new Random();
 
             LoadFont();
+
+            InstructionsExecuted = 0;
         }
 
         /// <summary>
@@ -276,6 +280,7 @@ namespace OctoChimp
             }
 
             Console.WriteLine($"0x{PrevProgramCounter.ToString("X")}\t{decodedOpcode}");
+            InstructionsExecuted++;
 
             // Update timers
             if (DelayTimer > 0)
@@ -575,7 +580,7 @@ namespace OctoChimp
                 //    break;
 
                 default:
-                    throw new Exception("Unknown opcode!");
+                    throw new Exception($"Unknown opcode: {decodedOpcode}");
             }
 
             ProgramCounter += 2;

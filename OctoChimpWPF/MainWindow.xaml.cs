@@ -54,6 +54,8 @@ namespace OctoChimpWPF
             }
 
             FrameImage.Source = frame;
+
+            StatusBarItem.Content = $"{_emulator.InstructionsExecuted} instructions executed";
         }
 
         private void OpenRomMenuItemOnClick(object sender, RoutedEventArgs e)

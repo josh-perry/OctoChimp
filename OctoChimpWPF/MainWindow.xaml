@@ -13,6 +13,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Menu Grid.Row="0">
@@ -42,6 +43,10 @@
             RenderOptions.BitmapScalingMode="NearestNeighbor"
             Stretch="UniformToFill"
             HorizontalAlignment="Stretch"/>
+
+        <StatusBar Grid.Row="2">
+            <StatusBarItem x:Name="StatusBarItem"></StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
  

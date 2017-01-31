@@ -328,7 +328,7 @@ namespace OctoChimp
                     IndexRegister += VRegisters[decodedOpcode.X];
                     break;
                 case 0x9:
-                    IndexRegister = Memory[VRegisters[decodedOpcode.X]];
+                    IndexRegister = (ushort) (VRegisters[decodedOpcode.X] * 5);
                     break;
                 case 0x3:
                     Memory[IndexRegister]     = (byte) (VRegisters[decodedOpcode.Y] / 100);

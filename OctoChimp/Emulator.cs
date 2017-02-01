@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 
 namespace OctoChimp
@@ -79,6 +80,8 @@ namespace OctoChimp
 
         public int InstructionsExecuted = 0;
 
+        private Thread TimerThread;
+
         /// <summary>
         /// 
         /// </summary>
@@ -131,6 +134,9 @@ namespace OctoChimp
 
             ProgramCounter = 512;
 
+            TimerThread = new Thread(UpdateTimers);
+            TimerThread.Start();
+
             rnd = new Random();
 
             LoadFont();
@@ -165,6 +171,36 @@ namespace OctoChimp
             }
         }
 
+        private void UpdateTimers()
+        {
+            while (true)
+            {
+                if (!Running)
+                {
+                    Thread.Sleep(1000 / 60);
+                    continue;
+                }
+
+                // Update timers
+                if (DelayTimer > 0)
+                {
+                    DelayTimer--;
+                }
+
+                if (SoundTimer > 0)
+                {
+                    if (SoundTimer == 1)
+                    {
+                        Console.Beep();
+                    }
+
+                    SoundTimer--;
+                }
+
+                Thread.Sleep(1000/60);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -193,83 +229,83 @@ namespace OctoChimp
             // Fetch
             CurrentOpcode = (ushort) (Memory[ProgramCounter] << 8 | Memory[ProgramCounter + 1]);
             
-            var decodedOpcode = new DecodedOpcode(CurrentOpcode);
+            var op = new DecodedOpcode(CurrentOpcode);
             
             // Decode + execute
             switch (CurrentOpcode & 0xF000)
             {
                 case 0x0000:
-                    _miscOpcodes(decodedOpcode);
+                    _miscOpcodes(op);
                     break;
 
                 case 0x1000:
-                    decodedOpcode.Description = $"Jump to 0x{decodedOpcode.NNN.ToString("X")}";
-                    _1NNN(decodedOpcode);
+                    //op.Description = $"Jump to 0x{op.NNN.ToString("X")}";
+                    _1NNN(op);
                     break;
 
                 case 0x2000:
-                    decodedOpcode.Description = $"Call subroutine at 0x{decodedOpcode.NNN.ToString("X")}";
-                    _2NNN(decodedOpcode);
+                    //op.Description = $"Call subroutine at 0x{op.NNN.ToString("X")}";
+                    _2NNN(op);
                     break;
 
                 case 0x3000:
-                    decodedOpcode.Description = $"Skip if V{decodedOpcode.X} == {decodedOpcode.NN.ToString("X")}";
-                    _3XNN(decodedOpcode);
+                    //op.Description = $"Skip if V{op.X} == {op.NN.ToString("X")}";
+                    _3XNN(op);
                     break;
 
                 case 0x4000:
-                    decodedOpcode.Description = $"Skip if V{decodedOpcode.X} != {decodedOpcode.NN.ToString("X")}";
-                    _4XNN(decodedOpcode);
+                    //op.Description = $"Skip if V{op.X} != {op.NN.ToString("X")}";
+                    _4XNN(op);
                     break;
 
                 case 0x5000:
-                    decodedOpcode.Description = $"Skip if V{decodedOpcode.X} == V{decodedOpcode.Y}";
-                    _5XY0(decodedOpcode);
+                    //op.Description = $"Skip if V{op.X} == V{op.Y}";
+                    _5XY0(op);
                     break;
 
                 case 0x6000:
-                    decodedOpcode.Description = $"V{decodedOpcode.X} = {decodedOpcode.NN.ToString("X")}";
-                    _6XNN(decodedOpcode);
+                    //op.Description = $"V{op.X} = {op.NN.ToString("X")}";
+                    _6XNN(op);
                     break;
 
                 case 0x7000:
-                    decodedOpcode.Description = $"V{decodedOpcode.X} += {decodedOpcode.NN.ToString("X")}";
-                    _7XNN(decodedOpcode);
+                    //op.Description = $"V{op.X} += {op.NN.ToString("X")}";
+                    _7XNN(op);
                     break;
 
                 case 0x8000:
-                    _8XYN(decodedOpcode);
+                    _8XYN(op);
                     break;
 
                 case 0x9000:
-                    _9XY0(decodedOpcode);
+                    _9XY0(op);
                     break;
                 
                 case 0xA000:
-                    decodedOpcode.Description = $"I = {decodedOpcode.NNN.ToString("X")}";
-                    _ANNN(decodedOpcode);
+                    //op.Description = $"I = {op.NNN.ToString("X")}";
+                    _ANNN(op);
                     break;
 
                 case 0xB000:
-                    _BNNN(decodedOpcode);
+                    _BNNN(op);
                     break;
 
                 case 0xC000:
-                    decodedOpcode.Description = $"V{decodedOpcode.X} = RNG & {decodedOpcode.NN.ToString("X")}";
-                    _CXNN(decodedOpcode);
+                    //op.Description = $"V{op.X} = RNG & {op.NN.ToString("X")}";
+                    _CXNN(op);
                     break;
                 
                 case 0xD000:
-                    decodedOpcode.Description = $"Sprite at V{decodedOpcode.X}, V{decodedOpcode.Y} ({VRegisters[decodedOpcode.X]}, {VRegisters[decodedOpcode.Y]})";
-                    _DXYN(decodedOpcode);
+                    //op.Description = $"Sprite at V{op.X}, V{op.Y} ({VRegisters[op.X]}, {VRegisters[op.Y]})";
+                    _DXYN(op);
                     break;
 
                 case 0xE000:
-                    _EXNN(decodedOpcode);
+                    _EXNN(op);
                     break;
 
                 case 0xF000:
-                    _FNNN(decodedOpcode);
+                    _FNNN(op);
                     break;
                 
                 default:
@@ -278,24 +314,8 @@ namespace OctoChimp
                     break;
             }
 
-            Console.WriteLine($"0x{PrevProgramCounter.ToString("X")}\t{decodedOpcode}");
+            Console.WriteLine($"0x{PrevProgramCounter.ToString("X")}\t{op}");
             InstructionsExecuted++;
-
-            // Update timers
-            if (DelayTimer > 0)
-            {
-                DelayTimer--;
-            }
-
-            if (SoundTimer > 0)
-            {
-                if (SoundTimer == 1)
-                {
-                    Console.Beep();
-                }
-
-                SoundTimer--;
-            }
         }
 
         #region Opcodes

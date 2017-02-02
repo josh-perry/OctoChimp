@@ -557,31 +557,13 @@ namespace OctoChimp
 
                 // Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
                 case 0x4:
-                    // Not sure if this is correct.
-                    // Source: https://github.com/Oicho/GO-Chip8/blob/master/chip8/opcodes.go#L151
-                    if (VRegisters[decodedOpcode.Y] > 0xFF - decodedOpcode.X)
-                    {
-                        VRegisters[0xF] = 1;
-                    }
-                    else
-                    {
-                        VRegisters[0xF] = 0;
-                    }
-
+                    VRegisters[0xF] = (ushort)(VRegisters[decodedOpcode.Y] >= VRegisters[decodedOpcode.X] ? 0 : 1);
                     VRegisters[decodedOpcode.X] += VRegisters[decodedOpcode.Y];
                     break;
 
                 // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
                 case 0x5:
-                    if (decodedOpcode.X < decodedOpcode.Y)
-                    {
-                        VRegisters[0xF] = 1;
-                    }
-                    else
-                    {
-                        VRegisters[0xF] = 0;
-                    }
-
+                    VRegisters[0xF] = (ushort)(VRegisters[decodedOpcode.Y] >= VRegisters[decodedOpcode.X] ? 0 : 1);
                     VRegisters[decodedOpcode.X] -= VRegisters[decodedOpcode.Y];
                     break;
                 
